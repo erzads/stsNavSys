@@ -3,10 +3,13 @@ package com.dsaita.NavSys.pathing;
 import com.megacrit.cardcrawl.map.MapRoomNode;
 import com.megacrit.cardcrawl.rooms.*;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
-public class PathInfo {
+import static java.util.Comparator.comparing;
+
+public class PathInfo implements Comparable<PathInfo> {
 
     private final List<MapRoomNode> nodes;
     private int monsterNodeCount;
@@ -67,5 +70,16 @@ public class PathInfo {
     @Override
     public int hashCode() {
         return Objects.hash(monsterNodeCount, eventNodeCount, restSiteNodeCount, eliteNodeCount, shopNodeCount);
+    }
+
+    @Override
+    public int compareTo(PathInfo o) {
+        Comparator<PathInfo> comparator =
+                comparing(pathInfo -> pathInfo.getEliteNodeCount() + pathInfo.getRestSiteNodeCount());
+        return comparator
+                .thenComparing(PathInfo::getEliteNodeCount)
+                .thenComparing(PathInfo::getRestSiteNodeCount)
+                .reversed()
+                .compare(this, o);
     }
 }
