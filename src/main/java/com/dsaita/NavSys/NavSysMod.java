@@ -2,6 +2,7 @@ package com.dsaita.NavSys;
 
 import basemod.BaseMod;
 import basemod.interfaces.RenderSubscriber;
+import basemod.interfaces.StartActSubscriber;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.dsaita.NavSys.pathing.AbstractDungeonWrapper;
@@ -21,7 +22,7 @@ import static com.dsaita.NavSys.ui.PathInfoPanel.*;
 import static java.util.stream.Collectors.toList;
 
 @SpireInitializer
-public class NavSysMod implements RenderSubscriber {
+public class NavSysMod implements RenderSubscriber, StartActSubscriber {
 
     private List<PathInfo> pathInfoList;
 
@@ -91,5 +92,10 @@ public class NavSysMod implements RenderSubscriber {
                 node.render(sb);
             }
         }
+    }
+
+    @Override
+    public void receiveStartAct() {
+        pathInfoList = null;
     }
 }

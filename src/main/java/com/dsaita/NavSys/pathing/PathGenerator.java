@@ -3,6 +3,7 @@ package com.dsaita.NavSys.pathing;
 import com.megacrit.cardcrawl.map.MapRoomNode;
 import com.megacrit.cardcrawl.neow.NeowRoom;
 import com.megacrit.cardcrawl.rooms.EmptyRoom;
+import com.megacrit.cardcrawl.rooms.TreasureRoomBoss;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,7 +20,10 @@ public class PathGenerator {
     public List<List<MapRoomNode>> generateAllPossiblePaths() {
         List<List<MapRoomNode>> paths = new ArrayList<>();
         MapRoomNode currMapNode = this.abstractDungeonWrapper.getCurrMapNode();
-        if (currMapNode != null && !(currMapNode.getRoom() instanceof NeowRoom) && !(currMapNode.getRoom() instanceof EmptyRoom)) {
+        if (currMapNode != null
+                && !(currMapNode.getRoom() instanceof NeowRoom)
+                && !(currMapNode.getRoom() instanceof EmptyRoom)
+                && !(currMapNode.getRoom() instanceof TreasureRoomBoss)) {
             paths.add(Collections.singletonList(currMapNode));
             addAllPathsFrom(currMapNode, paths);
             if (paths.size() == 1 && paths.get(0).size() == 1) {
