@@ -16,8 +16,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
-    <name>NavSys - Saita</name>
-    <version>0.0.0</version>
+    <name>NavSys</name>
+    <version>1.0.0</version>
     <description>Displays a summary of "all" the available paths.</description>
 
     <groupId>com.dsaita</groupId>

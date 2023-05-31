@@ -58,7 +58,7 @@ public class NavSysMod implements RenderSubscriber, StartActSubscriber {
     public void receiveRender(SpriteBatch sb) {
         if (CardCrawlGame.isInARun() && AbstractDungeon.screen == AbstractDungeon.CurrentScreen.MAP) {
             generatePathsIfNeeded();
-            int count = new PathInfoPanel(sb).draw(pathInfoList);
+            List<PathInfo> drawnPaths = new PathInfoPanel(sb).draw(pathInfoList);
             if (hitboxes.isEmpty()) {
                 setUpHitBoxes(sb);
             }
@@ -74,8 +74,8 @@ public class NavSysMod implements RenderSubscriber, StartActSubscriber {
             }
 
             hoveredIndex.ifPresent(index -> {
-                if (index < count) {
-                    this.highlightMap(index, sb);
+                if (index < drawnPaths.size()) {
+                    this.highlightMap(drawnPaths.get(index), sb);
                 }
             });
         }
@@ -90,15 +90,12 @@ public class NavSysMod implements RenderSubscriber, StartActSubscriber {
         }
     }
 
-    private void highlightMap(Integer highlightedIndex, SpriteBatch sb) {
-        if (pathInfoList.size() > highlightedIndex) {
-            PathInfo pathInfo = pathInfoList.get(highlightedIndex);
-            List<MapRoomNode> nodes = pathInfo.getNodes();
-            for (MapRoomNode node : nodes) {
-                if (!node.taken) {
-                    node.color = Color.BLUE;
-                    node.render(sb);
-                }
+    private void highlightMap(PathInfo pathInfo, SpriteBatch sb) {
+        List<MapRoomNode> nodes = pathInfo.getNodes();
+        for (MapRoomNode node : nodes) {
+            if (!node.taken) {
+                node.color = Color.BLUE;
+                node.render(sb);
             }
         }
     }

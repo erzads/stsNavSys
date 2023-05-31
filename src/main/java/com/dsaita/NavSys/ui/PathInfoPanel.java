@@ -29,7 +29,7 @@ public class PathInfoPanel {
         this.sb = sb;
     }
 
-    public int draw(List<PathInfo> pathInfoList) {
+    public List<PathInfo> draw(List<PathInfo> pathInfoList) {
         sb.setColor(Color.WHITE);
         String panelTitle = "NavSys - " + pathInfoList.size() + " found (max: " + MAX_RESULTS + ")";
         FontHelper.renderFontLeftTopAligned(sb, FontHelper.blockInfoFont, panelTitle, SCREEN_X, CONTENT_Y, Settings.GOLD_COLOR);
@@ -43,7 +43,7 @@ public class PathInfoPanel {
             drawIcons(sb, CONTENT_X, y);
             renderText(sb, filteredPaths.get(i), CONTENT_X, y);
         }
-        return filteredPaths.size();
+        return filteredPaths;
     }
 
     private void drawIcons(SpriteBatch sb, float baseX, float baseY) {
