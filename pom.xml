@@ -17,7 +17,7 @@
     </properties>
 
     <name>NavSys</name>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <description>Displays a summary of "all" the available paths.</description>
 
     <groupId>com.dsaita</groupId>

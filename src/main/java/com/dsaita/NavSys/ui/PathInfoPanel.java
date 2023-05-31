@@ -23,13 +23,8 @@ public class PathInfoPanel {
     public static final float ICON_WIDTH = 25;
     public static final float ICON_HEIGHT = 25;
     public static final int MAX_RESULTS = 15;
-    private final SpriteBatch sb;
 
-    public PathInfoPanel(SpriteBatch sb) {
-        this.sb = sb;
-    }
-
-    public List<PathInfo> draw(List<PathInfo> pathInfoList) {
+    public static List<PathInfo> draw(SpriteBatch sb, List<PathInfo> pathInfoList) {
         sb.setColor(Color.WHITE);
         String panelTitle = "NavSys - " + pathInfoList.size() + " found (max: " + MAX_RESULTS + ")";
         FontHelper.renderFontLeftTopAligned(sb, FontHelper.blockInfoFont, panelTitle, SCREEN_X, CONTENT_Y, Settings.GOLD_COLOR);
@@ -46,7 +41,7 @@ public class PathInfoPanel {
         return filteredPaths;
     }
 
-    private void drawIcons(SpriteBatch sb, float baseX, float baseY) {
+    private static void drawIcons(SpriteBatch sb, float baseX, float baseY) {
         float spaceBetweenIcons = 40;
         List<Texture> iconsTextures = Arrays.asList(
                 ImageMaster.MAP_NODE_ELITE,
@@ -65,7 +60,7 @@ public class PathInfoPanel {
         }
     }
 
-    private void renderText(SpriteBatch sb, PathInfo pathInfo, float baseX, float baseY) {
+    private static void renderText(SpriteBatch sb, PathInfo pathInfo, float baseX, float baseY) {
         float spaceBetweenText = 40;
         List<Integer> nodesCounts = Stream.of(pathInfo)
                 .map(p -> Arrays.asList(p.getEliteNodeCount(), p.getRestSiteNodeCount(), p.getShopNodeCount(), p.getMonsterNodeCount(), p.getEventNodeCount()))
@@ -75,7 +70,7 @@ public class PathInfoPanel {
             Integer nodeCount = nodesCounts.get(i);
             float x = baseX;
             if (i != 0) {
-                x = baseX + (i  * spaceBetweenText);
+                x = baseX + (i * spaceBetweenText);
             }
             FontHelper.renderFontLeft(sb, FontHelper.blockInfoFont, String.valueOf(nodeCount), x, baseY, Settings.CREAM_COLOR);
         }

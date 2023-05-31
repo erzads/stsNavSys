@@ -2,7 +2,6 @@ package com.dsaita.NavSys;
 
 import basemod.BaseMod;
 import basemod.interfaces.RenderSubscriber;
-import basemod.interfaces.StartActSubscriber;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.dsaita.NavSys.pathing.AbstractDungeonWrapper;
@@ -17,13 +16,12 @@ import com.megacrit.cardcrawl.map.MapRoomNode;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static com.dsaita.NavSys.ui.PathInfoPanel.*;
 import static java.util.stream.Collectors.toList;
 
 @SpireInitializer
-public class NavSysMod implements RenderSubscriber, StartActSubscriber {
+public class NavSysMod implements RenderSubscriber {
 
     private List<PathInfo> pathInfoList;
 
@@ -31,7 +29,7 @@ public class NavSysMod implements RenderSubscriber, StartActSubscriber {
 
     private final List<Hitbox> hitboxes = new ArrayList<>();
 
-    private Optional<Integer> hoveredIndex = Optional.empty();
+    private final PathGenerator pathGenerator = new PathGenerator(new AbstractDungeonWrapper());
 
     public NavSysMod() {
         BaseMod.subscribe(this);
@@ -46,7 +44,7 @@ public class NavSysMod implements RenderSubscriber, StartActSubscriber {
         MapRoomNode currMapNode = AbstractDungeon.getCurrMapNode();
         if (pathInfoList == null || !currMapNode.equals(lastCurrentNode)) {
             lastCurrentNode = currMapNode;
-            List<List<MapRoomNode>> possiblePaths = new PathGenerator(new AbstractDungeonWrapper()).generateAllPossiblePaths();
+            List<List<MapRoomNode>> possiblePaths = pathGenerator.generateAllPossiblePaths();
             pathInfoList = possiblePaths.stream().map(PathInfo::new).collect(toList());
             return true;
         } else {
@@ -58,7 +56,7 @@ public class NavSysMod implements RenderSubscriber, StartActSubscriber {
     public void receiveRender(SpriteBatch sb) {
         if (CardCrawlGame.isInARun() && AbstractDungeon.screen == AbstractDungeon.CurrentScreen.MAP) {
             generatePathsIfNeeded();
-            List<PathInfo> drawnPaths = new PathInfoPanel(sb).draw(pathInfoList);
+            List<PathInfo> drawnPaths = PathInfoPanel.draw(sb, pathInfoList);
             if (hitboxes.isEmpty()) {
                 setUpHitBoxes(sb);
             }
@@ -67,17 +65,12 @@ public class NavSysMod implements RenderSubscriber, StartActSubscriber {
                 Hitbox hitbox = hitboxes.get(i);
                 hitbox.update();
                 if (hitbox.hovered) {
-                    hoveredIndex = Optional.of(i);
+                    if (i < drawnPaths.size()) {
+                        this.highlightMap(drawnPaths.get(i), sb);
+                    }
                     break;
                 }
-                hoveredIndex = Optional.empty();
             }
-
-            hoveredIndex.ifPresent(index -> {
-                if (index < drawnPaths.size()) {
-                    this.highlightMap(drawnPaths.get(index), sb);
-                }
-            });
         }
     }
 
@@ -98,10 +91,5 @@ public class NavSysMod implements RenderSubscriber, StartActSubscriber {
                 node.render(sb);
             }
         }
-    }
-
-    @Override
-    public void receiveStartAct() {
-
     }
 }
