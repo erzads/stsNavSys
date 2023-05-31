@@ -12,7 +12,7 @@ Hovering on the summary will highlight the path.
 * Paths are sorted by sum of rest sites and elites, then by elites, then by rest sites.
 
 ## Images
-![Screenshot from 2023-05-29 15-37-58](https://github.com/erzads/stsNavSys/assets/699344/3e6e8acb-bf25-49e5-b0be-85f512914466)
+![Screenshot from 2023-05-31 10-50-26](https://github.com/erzads/stsNavSys/assets/699344/4e893e11-f855-40b3-baab-5f2bda3bf965)
 
 ## Contributing
 Any help is appreciated. There are bugs and UI/QoL improvements to be done.
