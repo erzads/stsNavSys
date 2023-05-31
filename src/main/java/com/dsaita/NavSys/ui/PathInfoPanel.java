@@ -6,24 +6,22 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.dsaita.NavSys.pathing.PathInfo;
 import com.megacrit.cardcrawl.core.Settings;
 import com.megacrit.cardcrawl.helpers.FontHelper;
+import com.megacrit.cardcrawl.helpers.ImageMaster;
 
-import java.util.Comparator;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static java.util.Comparator.comparing;
+import java.util.stream.Stream;
 
 public class PathInfoPanel {
-
-    private static final Texture SCREEN = new Texture("images/highlight_menu.png");
-    public static final float SCREEN_WIDTH = 300.0f;
-    public static final float SCREEN_HEIGHT = 500.0f;
     private static final float SCREEN_X = 20 * Settings.xScale;
-    private static final float SCREEN_Y = Settings.HEIGHT - 50 - SCREEN_HEIGHT;
-    public static final float CONTENT_X = 25 + SCREEN_X;
-    public static final float CONTENT_Y = Settings.HEIGHT - 70;
-    public static final float TEXT_LINE_OFFSET = 40 * Settings.scale;
+    public static final float CONTENT_X = SCREEN_X + 5;
+    public static final float CONTENT_Y = Settings.HEIGHT - Settings.yScale * 200;
+    public static final float TEXT_LINE_OFFSET = 30;
 
+    public static final float ICON_WIDTH = 25;
+    public static final float ICON_HEIGHT = 25;
     public static final int MAX_RESULTS = 15;
     private final SpriteBatch sb;
 
@@ -31,27 +29,55 @@ public class PathInfoPanel {
         this.sb = sb;
     }
 
-    public void draw(List<PathInfo> pathInfoList) {
+    public int draw(List<PathInfo> pathInfoList) {
         sb.setColor(Color.WHITE);
-        sb.draw(SCREEN, SCREEN_X, SCREEN_Y, SCREEN_WIDTH, SCREEN_HEIGHT);
-
         String panelTitle = "NavSys - " + pathInfoList.size() + " found (max: " + MAX_RESULTS + ")";
-        FontHelper.renderFontLeftTopAligned(sb, FontHelper.blockInfoFont, panelTitle, CONTENT_X, CONTENT_Y, Settings.GOLD_COLOR);
+        FontHelper.renderFontLeftTopAligned(sb, FontHelper.blockInfoFont, panelTitle, SCREEN_X, CONTENT_Y, Settings.GOLD_COLOR);
 
         List<PathInfo> filteredPaths = pathInfoList.stream()
                 .sorted().distinct()
                 .limit(MAX_RESULTS)
                 .collect(Collectors.toList());
         for (int i = 0; i < filteredPaths.size(); i++) {
-            PathInfo pathInfo = filteredPaths.get(i);
-            String label = String.format("%dElite %dRest %d$ %dX %d?",
-                    pathInfo.getEliteNodeCount(),
-                    pathInfo.getRestSiteNodeCount(),
-                    pathInfo.getShopNodeCount(),
-                    pathInfo.getMonsterNodeCount(),
-                    pathInfo.getEventNodeCount());
             float y = CONTENT_Y - (TEXT_LINE_OFFSET * (i + 1));
-            FontHelper.renderFontLeft(sb, FontHelper.blockInfoFont, label, CONTENT_X, y, Settings.CREAM_COLOR);
+            drawIcons(sb, CONTENT_X, y);
+            renderText(sb, filteredPaths.get(i), CONTENT_X, y);
+        }
+        return filteredPaths.size();
+    }
+
+    private void drawIcons(SpriteBatch sb, float baseX, float baseY) {
+        float spaceBetweenIcons = 40;
+        List<Texture> iconsTextures = Arrays.asList(
+                ImageMaster.MAP_NODE_ELITE,
+                ImageMaster.MAP_NODE_REST,
+                ImageMaster.MAP_NODE_MERCHANT,
+                ImageMaster.MAP_NODE_ENEMY,
+                ImageMaster.MAP_NODE_EVENT
+        );
+
+        for (int i = 0; i < iconsTextures.size(); i++) {
+            float x = baseX + 5;
+            if (i != 0) {
+                x = baseX + 5 + i * spaceBetweenIcons;
+            }
+            sb.draw(iconsTextures.get(i), x, baseY - 12.5f, ICON_WIDTH, ICON_HEIGHT);
+        }
+    }
+
+    private void renderText(SpriteBatch sb, PathInfo pathInfo, float baseX, float baseY) {
+        float spaceBetweenText = 40;
+        List<Integer> nodesCounts = Stream.of(pathInfo)
+                .map(p -> Arrays.asList(p.getEliteNodeCount(), p.getRestSiteNodeCount(), p.getShopNodeCount(), p.getMonsterNodeCount(), p.getEventNodeCount()))
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+        for (int i = 0; i < nodesCounts.size(); i++) {
+            Integer nodeCount = nodesCounts.get(i);
+            float x = baseX;
+            if (i != 0) {
+                x = baseX + (i  * spaceBetweenText);
+            }
+            FontHelper.renderFontLeft(sb, FontHelper.blockInfoFont, String.valueOf(nodeCount), x, baseY, Settings.CREAM_COLOR);
         }
     }
 }

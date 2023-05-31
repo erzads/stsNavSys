@@ -2,6 +2,7 @@ package com.dsaita.NavSys;
 
 import basemod.BaseMod;
 import basemod.interfaces.RenderSubscriber;
+import basemod.interfaces.StartActSubscriber;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.dsaita.NavSys.pathing.AbstractDungeonWrapper;
@@ -22,7 +23,7 @@ import static com.dsaita.NavSys.ui.PathInfoPanel.*;
 import static java.util.stream.Collectors.toList;
 
 @SpireInitializer
-public class NavSysMod implements RenderSubscriber {
+public class NavSysMod implements RenderSubscriber, StartActSubscriber {
 
     private List<PathInfo> pathInfoList;
 
@@ -57,7 +58,7 @@ public class NavSysMod implements RenderSubscriber {
     public void receiveRender(SpriteBatch sb) {
         if (CardCrawlGame.isInARun() && AbstractDungeon.screen == AbstractDungeon.CurrentScreen.MAP) {
             generatePathsIfNeeded();
-            new PathInfoPanel(sb).draw(pathInfoList);
+            int count = new PathInfoPanel(sb).draw(pathInfoList);
             if (hitboxes.isEmpty()) {
                 setUpHitBoxes(sb);
             }
@@ -72,18 +73,18 @@ public class NavSysMod implements RenderSubscriber {
                 hoveredIndex = Optional.empty();
             }
 
-            if (hoveredIndex.isPresent()) {
-                this.highlightMap(hoveredIndex.get(), sb);
-            } else {
-                this.clearHighlight(sb);
-            }
+            hoveredIndex.ifPresent(index -> {
+                if (index < count) {
+                    this.highlightMap(index, sb);
+                }
+            });
         }
     }
 
     private void setUpHitBoxes(SpriteBatch sb) {
         for (int i = 0; i < MAX_RESULTS; i++) {
-            float y = CONTENT_Y - (5 + TEXT_LINE_OFFSET * (i + 1));
-            Hitbox hitbox = new Hitbox(CONTENT_X, y, 200, 20);
+            float y = CONTENT_Y - (12 + TEXT_LINE_OFFSET * (i + 1));
+            Hitbox hitbox = new Hitbox(CONTENT_X, y, 190, 18);
             hitbox.render(sb);
             hitboxes.add(hitbox);
         }
@@ -102,16 +103,8 @@ public class NavSysMod implements RenderSubscriber {
         }
     }
 
-    private void clearHighlight(SpriteBatch sb) {
-        for (PathInfo pathInfo : pathInfoList) {
-            List<MapRoomNode> nodes = pathInfo.getNodes();
-            for (MapRoomNode node : nodes) {
-                if (node.color.equals(Color.BLUE)) {
-                    node.color = Color.BLACK;
-                    node.render(sb);
-                }
-            }
-        }
+    @Override
+    public void receiveStartAct() {
 
     }
 }
